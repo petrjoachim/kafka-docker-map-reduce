@@ -1,0 +1,51 @@
+version: '2'
+services:
+  generate:
+    build:
+      context: .
+      dockerfile: Dockerfile-generate
+    links:
+     - kafka
+
+    environment:
+      KAFKA_URL: "kafka:9092"
+      KAFKA_PRODUCE: "map"
+
+    volumes:
+      - .:/usr/src/app/
+    command: python -u generate.py
+
+  map:
+    build:
+      context: .
+      dockerfile: Dockerfile-map
+    links:
+     - kafka
+
+    environment:
+      KAFKA_URL: "kafka:9092"
+      KAFKA_CONSUME: "map"
+      KAFKA_PRODUCE: "reduce"
+
+    volumes:
+      - .:/usr/src/app/
+    command: python -u map.py
+
+  reduce:
+    build:
+      context: .
+      dockerfile: Dockerfile-reduce
+    links:
+     - kafka
+
+    environment:
+      KAFKA_URL: "kafka:9092"
+      KAFKA_CONSUME: "reduce"
+      KAFKA_PRODUCE: "reduce"
+
+    volumes:
+      - .:/usr/src/app/
+    command: python -u reduce.py
+
+  kafka:
+    image: "spotify/kafka"

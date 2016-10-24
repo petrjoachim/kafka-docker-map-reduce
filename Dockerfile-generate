@@ -1,0 +1,12 @@
+FROM python:3.5
+MAINTAINER Petr Joachim <petr.joachim@kiwi.com>
+
+WORKDIR /usr/src/app
+
+# install requirements
+COPY requirements.txt /usr/src/app/
+RUN pip install --no-cache-dir -r requirements.txt
+
+# install application
+COPY generate.py /usr/src/app/
+COPY core.py /usr/src/app/
